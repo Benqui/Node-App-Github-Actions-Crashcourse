@@ -1,0 +1,43 @@
+name: Integration
+
+on: #this means that on this conditions the actions will be made
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs: #all the jobs that are gonna be made, all the actions on other words
+  build:
+    runs-on: ubuntu-latest #creates a server with this distro/OS on github not on my local machine
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x] #makes a set/list of the versions that are gonna be used foor building (in this case)
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm i
+      - run: npm run build
+  unit-tests: #Creates the unit testing here
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm i
+      - run: npm run test
